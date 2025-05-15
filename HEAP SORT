@@ -1,0 +1,44 @@
+def heap_sort(arr):
+    n = len(arr)
+    for start in range(n // 2 - 1, -1, -1):
+        root = start
+        while True:
+            child = 2 * root + 1
+            if child >= n:
+                break
+            if child + 1 < n and arr[child] < arr[child + 1]:
+                child += 1
+            if arr[root] < arr[child]:
+                arr[root], arr[child] = arr[child], arr[root]
+                root = child
+            else:
+                break
+    for end in range(n - 1, 0, -1):
+        arr[end], arr[0] = arr[0], arr[end]
+        root = 0
+        while True:
+            child = 2 * root + 1
+            if child >= end:
+                break
+            if child + 1 < end and arr[child] < arr[child + 1]:
+                child += 1
+            if arr[root] < arr[child]:
+                arr[root], arr[child] = arr[child], arr[root]
+                root = child
+            else:
+                break
+
+arr = [12, 11, 13, 5, 6, 7]
+print("Original array:")
+print(arr)
+heap_sort(arr)
+print("Sorted array:")
+
+OUTPUT:
+Original array:
+[12, 11, 13, 5, 6, 7]
+Sorted array:
+[5, 6, 7, 11, 12, 13]
+
+
+print(arr)
