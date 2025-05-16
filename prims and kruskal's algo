@@ -1,99 +1,136 @@
 PRIMS ALGORITHM:
-import sys
+#include <stdio.h>
+#include <limits.h>
 
-def prims_algorithm(graph):
-    n = len(graph)
+#define V 5
 
-    selected = [False] * n
-    selected[0] = True  # Start from vertex 0
-    num_edges = 0
+int minKey(int key[], int mstSet[]) {
+    int min = INT_MAX, min_index;
+    for (int v = 0; v < V; v++) {
+        if (mstSet[v] == 0 && key[v] < min) {
+            min = key[v];
+            min_index = v;
+        }
+    }
+    return min_index;
+}
 
-    print("Edge : Weight")
+void primMST(int graph[V][V]) {
+    int parent[V], key[V], mstSet[V];
+    
+    for (int i = 0; i < V; i++) {
+        key[i] = INT_MAX;
+        mstSet[i] = 0;
+    }
 
-    while num_edges < n - 1:
-        minimum = sys.maxsize
-        x = y = 0
+    key[0] = 0;
+    parent[0] = -1;
 
-        for i in range(n):
-            if selected[i]:
-                for j in range(n):
-                    if not selected[j] and graph[i][j]:
-                        if minimum > graph[i][j]:
-                            minimum = graph[i][j]
-                            x = i
-                            y = j
+    for (int count = 0; count < V - 1; count++) {
+        int u = minKey(key, mstSet);
+        mstSet[u] = 1;
 
-        print(f"{x} - {y} : {graph[x][y]}")
-        selected[y] = True
-        num_edges += 1
-graph = [
-    [0, 2, 0, 6, 0],
-    [2, 0, 3, 8, 5],
-    [0, 3, 0, 0, 7],
-    [6, 8, 0, 0, 9],
-    [0, 5, 7, 9, 0]
-]
+        for (int v = 0; v < V; v++) {
+            if (graph[u][v] && mstSet[v] == 0 && graph[u][v] < key[v]) {
+                parent[v] = u;
+                key[v] = graph[u][v];
+            }
+        }
+    }
 
-prims_algorithm(graph)
+    printf("Edge \tWeight\n");
+    for (int i = 1; i < V; i++)
+        printf("%d - %d \t%
+
 
 OUTPUT:
-Edge : Weight
-0 - 1 : 2
-1 - 2 : 3
-1 - 4 : 5
-0 - 3 : 6
+Edge    Weight
+0 - 1   2
+1 - 2   3
+0 - 3   6
+1 - 4   5
+
 
 KRUSKALS ALGORITHM:
-def find(parent, i):
-    if parent[i] == i:
-        return i
-    return find(parent, parent[i])
+#include <stdio.h>
+#include <stdlib.h>
 
-def union(parent, rank, x, y):
-    xroot = find(parent, x)
-    yroot = find(parent, y)
+#define MAX 100
 
-    if rank[xroot] < rank[yroot]:
-        parent[xroot] = yroot
-    elif rank[xroot] > rank[yroot]:
-        parent[yroot] = xroot
-    else:
-        parent[yroot] = xroot
-        rank[xroot] += 1
+typedef struct {
+    int u, v, weight;
+} Edge;
 
-def kruskal(graph, V):
-    result = []  # Store the MST result
-    graph.sort()
-    parent = [i for i in range(V)]
-    rank = [0] * V
-    e = 0 
-    i = 0 
-    while e < V - 1:
-        weight, u, v = graph[i]
-        i += 1
-        x = find(parent, u)
-        y = find(parent, v)
-        if x != y:
-            result.append((u, v, weight))
-            union(parent, rank, x, y)
-            e += 1
-    print("Edge : Weight")
-    for u, v, weight in result:
-        print(f"{u} - {v} : {weight}")
-# Example graph with 4 vertices and 5 edges
-V = 4
-graph = [
-    (10, 0, 1),
-    (6, 0, 2),
-    (5, 0, 3),
-    (15, 1, 3),
-    (4, 2, 3)
-]
+Edge edges[MAX];
+int parent[MAX], rank[MAX];
 
-kruskal(graph, V)
+int find(int i) {
+    if (parent[i] == i)
+        return i;
+    return find(parent[i]);
+}
+
+void unionSet(int x, int y) {
+    int rootX = find(x);
+    int rootY = find(y);
+    
+    if (rank[rootX] > rank[rootY])
+        parent[rootY] = rootX;
+    else if (rank[rootX] < rank[rootY])
+        parent[rootX] = rootY;
+    else {
+        parent[rootY] = rootX;
+        rank[rootX]++;
+    }
+}
+
+int compare(const void *a, const void *b) {
+    return ((Edge*)a)->weight - ((Edge*)b)->weight;
+}
+
+void kruskalMST(int n, int m) {
+    int mstWeight = 0;
+    
+    for (int i = 0; i < n; i++) {
+        parent[i] = i;
+        rank[i] = 0;
+    }
+
+    qsort(edges, m, sizeof(Edge), compare);
+    
+    printf("Edge \tWeight\n");
+    
+    for (int i = 0; i < m; i++) {
+        int u = edges[i].u;
+        int v = edges[i].v;
+        
+        if (find(u) != find(v)) {
+            printf("%d - %d \t%d\n", u, v, edges[i].weight);
+            mstWeight += edges[i].weight;
+            unionSet(u, v);
+        }
+    }
+    printf("Minimum spanning tree weight: %d\n", mstWeight);
+}
+
+int main() {
+    int n = 4, m = 5;
+    
+    edges[0].u = 0; edges[0].v = 1; edges[0].weight = 10;
+    edges[1].u = 0; edges[1].v = 2; edges[1].weight = 6;
+    edges[2].u = 0; edges[2].v = 3; edges[2].weight = 5;
+    edges[3].u = 1; edges[3].v = 3; edges[3].weight = 15;
+    edges[4].u = 2; edges[4].v = 3; edges[4].weight = 4;
+    
+    kruskalMST(n, m);
+    return 0;
+}
+
 
 OUTPUT:
-Edge : Weight
-2 - 3 : 4
-0 - 3 : 5
-0 - 1 : 10
+Edge    Weight
+2 - 3   4
+0 - 3   5
+0 - 1   10
+Minimum spanning tree weight: 19
+
