@@ -1,31 +1,32 @@
 string matching using brute force
 
-def brute_force_search(text, pattern):
-    n = len(text)
-    m = len(pattern)
+#include <stdio.h>
+#include <string.h>
 
-    for i in range(n - m + 1):  # Slide the pattern over text
-        match = True
-        for j in range(m):  # Check for a match
-            if text[i + j] != pattern[j]:
-                match = False
-                break
-        if match:
-            return i  # Match found at index i
+void bruteForceSearch(char *text, char *pattern) {
+    int n = strlen(text);
+    int m = strlen(pattern);
 
-    return -1  # Pattern not found
+    for (int i = 0; i <= n - m; i++) {
+        int j = 0;
+        while (j < m && text[i + j] == pattern[j]) {
+            j++;
+        }
+        
+        if (j == m) {
+            printf("Pattern found at index %d\n", i);
+        }
+    }
+}
 
+int main() {
+    char text[] = "ABABDABACDABABCABAB";
+    char pattern[] = "ABABCABAB";
 
-text = "this is a simple example"
-pattern = "simple"
+    bruteForceSearch(text, pattern);
+    return 0;
+}
 
-result = brute_force_search(text, pattern)
-
-if result != -1:
-    print(f"Pattern found at index {result}")
-else:
-    print("Pattern not found")
-
-  OUTPUT:
-  Pattern found at index 10
+OUTPUT:
+Pattern found at index 10
 
