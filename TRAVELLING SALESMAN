@@ -39,6 +39,9 @@ int main() {
     printf("Minimum cost: %d\n", min_path);
     return 0;
 }
+OUPUT:
+Minimum cost: 80
+    
 
 
 
