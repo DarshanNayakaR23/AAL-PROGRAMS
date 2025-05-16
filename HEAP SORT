@@ -44,11 +44,10 @@ int main() {
     int n = sizeof(arr) / sizeof(arr[0]);
 
     heapSort(arr, n);
-    printArray(arr, n);
+    printArray(arr, n);  
     return 0;
 }
 
-print(arr)
 OUTPUT:
 Original array:
 [12, 11, 13, 5, 6, 7]
